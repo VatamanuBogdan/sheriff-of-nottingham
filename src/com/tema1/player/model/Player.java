@@ -109,7 +109,7 @@ public abstract class Player {
     public abstract void inspectSack();
 
     /**
-     * Se recompleteaza man de carti a player-ului.
+     * Se recompleteaza mana de carti a player-ului.
      */
     public void reloadCards() {
         Deck gameDeck = Game.getDeck();

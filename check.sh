@@ -2,6 +2,7 @@
 
 ## CONSTANTS ##
 CURRENT_DIRECTORY=`pwd`
+BUILD_DIRECTORY="build"
 RESOURCES_DIRECTORY="checker/tests"
 GOOD_TESTS=0
 GOOD_CODE_STYLE=`echo -ne "Starting audit...\nAudit done.\n"`
@@ -14,13 +15,16 @@ test_points=1
 function cleanHomework
 {
 	rm dummy 2> /dev/null
-	find . -name "*.class" -type f -delete
+	rm -rf "$BUILD_DIRECTORY"
 	rm -rf "$RESOURCES_DIRECTORY/out"
 }
 
 function compileHomework
 {
-	javac -cp ".:FileIO.jar" -g com/tema1/main/Main.java 
+	javac -classpath "dependencies/FileIO.jar" \
+	      -sourcepath ./src/ \
+		  ./src/com/tema1/main/Main.java \
+		  -d "$BUILD_DIRECTORY"
 
 	mkdir "$RESOURCES_DIRECTORY/out"
 }
@@ -28,7 +32,9 @@ function compileHomework
 function checkTest
 {
     echo -ne "Test\t$1\t.....................................\t"
-    java -cp ".:FileIO.jar" com/tema1/main/Main "$RESOURCES_DIRECTORY/in/$1.in" dummy > "$RESOURCES_DIRECTORY/out/$1.out"
+
+    java -classpath "dependencies/FileIO.jar:${BUILD_DIRECTORY}" \
+		 com/tema1/main/Main "$RESOURCES_DIRECTORY/in/$1.in" dummy > "$RESOURCES_DIRECTORY/out/$1.out"
 
 	if [ $? -eq 0 ]; then
         `diff -Bw -u --ignore-all-space $RESOURCES_DIRECTORY/out/$1.out $RESOURCES_DIRECTORY/ref/$1.ref &> /dev/null`
